@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="请在辅助功能设置中开启 AutoTapService" />
+
+    <Button
+        android:id="@+id/btn_enable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开启辅助功能" />
+</LinearLayout>

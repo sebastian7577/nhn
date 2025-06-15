@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AutoTapApp</string>
+    <string name="accessibility_service_description">自动点击\"立即开始\"按钮</string>
+</resources>
