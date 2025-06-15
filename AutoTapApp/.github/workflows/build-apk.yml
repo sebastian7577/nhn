@@ -1,0 +1,66 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取所有历史记录（包含 Gradle Wrapper）
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Verify Gradle Wrapper
+      run: |
+        ls -la  # 列出所有文件
+        ./gradlew --version  # 验证 Gradle Wrapper 可用
+
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+    - name: Build Release APK
+      run: ./gradlew assembleRelease --stacktrace
+
+    - name: Prepare APKs
+      run: |
+        mkdir -p apk-artifacts
+        cp app/build/outputs/apk/release/*.apk apk-artifacts/
+        ls -la apk-artifacts
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: AutoTapApp
+        path: apk-artifacts/*.apk
+        retention-days: 1
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: auto-release-${{ github.run_id }}
+        name: AutoTapApp Release ${{ github.run_number }}
+        body: |
+          APK for AutoTap Accessibility Service
+          - 自动点击"立即开始"按钮
+          - 构建时间: ${{ steps.date.outputs.date }}
+          - 触发提交: ${{ github.sha }}
+        draft: false
+        prerelease: false
+        files: apk-artifacts/*.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
